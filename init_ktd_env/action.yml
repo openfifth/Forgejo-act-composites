@@ -1,0 +1,48 @@
+---
+name: "Initialise an environment for Koha-testing-docker"
+author: "Jake Deery <jake.deery@openfifth.co.uk>"
+description: "Initialises tmp directories and env vars for Koha-testing-docker to use"
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        set -ex
+
+        export DEBIAN_FRONTEND=noninteractive
+        export PERL_MM_USE_DEFAULT=1
+
+        apt update
+        apt install -y --no-install-recommends \
+            build-essential \
+            curl \
+            file \
+            git \
+            perl \
+            perl-doc
+
+        cpan -i Modern::Perl IPC::Cmd
+
+        export HELPER_SCRIPT="$(mktemp -d -p /tmp helper-script-XXXXXX)"
+        echo HELPER_SCRIPT="$HELPER_SCRIPT" >> ${{ env.FORGEJO_ENV }}
+        chmod -v a+rx $HELPER_SCRIPT
+
+        export SYNC_REPO="${{ env.FORGEJO_WORKSPACE }}"
+        echo SYNC_REPO="$SYNC_REPO" >> ${{ env.FORGEJO_ENV }}
+        chmod -v a+rx $SYNC_REPO
+
+        git rev-parse || perl -I. -MKoha
+
+        export KOHA_AUTO_VERSION="$(perl -I. -MKoha -le 'print $Koha::VERSION' | cut -b 1-5)"
+        # unsupported versions
+        [[ "$KOHA_AUTO_VERSION" == *".06"* ]] && export KOHA_AUTO_VERSION="main"
+        [[ "$KOHA_AUTO_VERSION" == *".12"* ]] && export KOHA_AUTO_VERSION="main"
+
+        [ -z "$KOHA_VERSION" ] && export KOHA_VERSION="$KOHA_AUTO_VERSION"
+        echo KOHA_VERSION="$KOHA_VERSION" >> ${{ env.FORGEJO_ENV }}
+
+        [ -z "$KOHA_IMAGE" ] && export KOHA_IMAGE="$KOHA_VERSION-bookworm"
+        echo KOHA_IMAGE="$KOHA_IMAGE" >> ${{ env.FORGEJO_ENV }}
+
+        [ -z "$DB_IMAGE" ] && export DB_IMAGE="mariadb:10.11"
+        echo DB_IMAGE="$DB_IMAGE" >> ${{ env.FORGEJO_ENV }}

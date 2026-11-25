@@ -29,6 +29,33 @@ jobs:
         uses: https://forgejo.openfifth.co.uk/openfifth/Forgejo-act-composites/init_kdd_env@trunk
 ```
 
+### init_ktd_env
+
+Initialises tmp directories and env vars for Koha-testing-docker to use
+
+Usage in workflows:
+
+```
+---
+name: Fully test, build, and publish Koha code
+
+on:
+  push:
+  workflow_call:
+  workflow dispatch:
+
+jobs:
+  execute_ktd:
+    name: Execute k.t.d run
+    if: ${{ !cancelled() }}
+    runs-on:
+      - trixie
+      - lxc
+    steps:
+      - name: Initialise k.t.d environment
+        uses: https://forgejo.openfifth.co.uk/openfifth/Forgejo-act-composites/init_ktd_env@trunk
+```
+
 ### install_docker_ce
 
 Installs standalone Docker CE Daemon and CLI
