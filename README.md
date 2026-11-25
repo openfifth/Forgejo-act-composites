@@ -55,3 +55,36 @@ jobs:
       - name: Install Docker CE
         uses: https://forgejo.openfifth.co.uk/openfifth/Forgejo-act-composites/install_docker_ce@trunk
 ```
+
+### install_docker_ce_cli
+
+Installs standalone Docker CE CLI
+
+Usage in workflows:
+
+```
+---
+name: Fully test, build, and publish Koha code
+
+on:
+  push:
+  workflow_call:
+  workflow dispatch:
+
+jobs:
+  install_docker_ce_cli:
+    name: Install Docker CE CLI and exit
+    if: ${{ !cancelled() }}
+    runs-on:
+      - trixie
+      - lxc
+    steps:
+      - name: Check we have a Docker socket
+        run: |
+             set -ex
+             if [[ ! -S "/run/docker.sock" ]]; then
+                 exit 1
+             fi
+      - name: Install Docker CE CLI
+        uses: https://forgejo.openfifth.co.uk/openfifth/Forgejo-act-composites/install_docker_ce_cli@trunk
+```
