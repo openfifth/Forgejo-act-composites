@@ -88,3 +88,30 @@ jobs:
       - name: Install Docker CE CLI
         uses: https://forgejo.openfifth.co.uk/openfifth/Forgejo-act-composites/install_docker_ce_cli@trunk
 ```
+
+### install_pbuilder
+
+Installs Pbuilder and Build-Essential
+
+Usage in workflows:
+
+```
+---
+name: Fully test, build, and publish Koha code
+
+on:
+  push:
+  workflow_call:
+  workflow dispatch:
+
+jobs:
+  install_pbuilder:
+    name: Install Pbuilder and Build-Essential, then exit
+    if: ${{ !cancelled() }}
+    runs-on:
+      - trixie
+      - lxc
+    steps:
+      - name: Install Pbuilder and Build-Essential
+        uses: https://forgejo.openfifth.co.uk/openfifth/Forgejo-act-composites/install_pbuilder@trunk
+```

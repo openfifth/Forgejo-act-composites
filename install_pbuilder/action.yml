@@ -1,0 +1,23 @@
+---
+name: "Install Pbuilder"
+author: "Jake Deery <jake.deery@openfifth.co.uk>"
+description: "Installs Pbuilder and Build-Essential"
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        set -ex
+        export DEBIAN_FRONTEND=noninteractive
+
+        apt update
+        apt install -y --no-install-recommends \
+            bash-completion \
+            build-essential \
+            debian-archive-keyring \
+            devscripts \
+            dh-make \
+            fakeroot \
+            file \
+            pbuilder
+        apt install -y --no-install-recommends ubuntu-archive-keyring || true
