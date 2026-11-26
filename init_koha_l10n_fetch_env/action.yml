@@ -1,0 +1,32 @@
+---
+name: "Initialise an environment for the Koha-l10n fetcher"
+author: "Jake Deery <jake.deery@openfifth.co.uk>"
+description: "Initialises tmp directories and env vars for the Koha-l10n fetcher"
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        set -ex
+        export DEBIAN_FRONTEND=noninteractive
+
+        apt update
+        apt install -y --no-install-recommends awk curl git perl perl-doc
+
+        export L10N_TMP="$(mktemp -d -p /tmp l10n-tmp-XXXXXX)"
+        echo L10N_TMP="$L10N_TMP" >> ${{ env.FORGEJO_ENV }}
+        chmod -v a+rx $L10N_TMP
+
+        export DEBS_OUT="$(mktemp -d -p /tmp debs-out-XXXXXX)"
+        echo DEBS_OUT="$DEBS_OUT" >> ${{ env.FORGEJO_ENV }}
+        chmod -v a+rx $DEBS_OUT
+
+        git rev-parse || perl -I. -MKoha
+
+        export KOHA_AUTO_VERSION="$(perl -I. -MKoha -le 'print $Koha::VERSION' | cut -b 1-5)"
+        # unsupported versions
+        [[ "$KOHA_AUTO_VERSION" == *".06"* ]] && export KOHA_AUTO_VERSION="unstable"
+        [[ "$KOHA_AUTO_VERSION" == *".12"* ]] && export KOHA_AUTO_VERSION="unstable"
+
+        [ -z "$KOHA_VERSION" ] && export KOHA_VERSION="$KOHA_AUTO_VERSION"
+        echo KOHA_VERSION="$KOHA_VERSION" >> ${{ env.FORGEJO_ENV }}
