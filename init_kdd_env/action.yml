@@ -50,3 +50,11 @@ runs:
 
         [ -z "$KDD_IMAGE" ] && export KDD_IMAGE="$KOHA_VERSION"
         echo KDD_IMAGE="$KDD_IMAGE" >> ${{ env.FORGEJO_ENV }}
+
+        id debian || adduser \
+            --shell /bin/sh \
+            --home /home/debian \
+            --disabled-password \
+            --gecos '' \
+            debian
+        getent group docker && usermod -a -G docker debian

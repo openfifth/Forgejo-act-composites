@@ -46,3 +46,11 @@ runs:
 
         [ -z "$DB_IMAGE" ] && export DB_IMAGE="mariadb:10.11"
         echo DB_IMAGE="$DB_IMAGE" >> ${{ env.FORGEJO_ENV }}
+
+        id debian || adduser \
+            --shell /bin/sh \
+            --home /home/debian \
+            --disabled-password \
+            --gecos '' \
+            debian
+        getent group docker && usermod -a -G docker debian

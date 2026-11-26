@@ -35,15 +35,6 @@ runs:
             docker-compose-plugin \
             sudo
 
-        id docker || adduser --system \
-            --shell /usr/sbin/nologin \
-            --home /var/lib/docker \
-            --no-create-home \
-            --disabled-password \
-            --gecos '' \
-            docker
-        usermod -a -G docker docker
-
         mkdir -v -p /run/containerd
         systemctl start containerd.service
 
