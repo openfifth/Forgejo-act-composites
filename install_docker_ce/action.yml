@@ -27,21 +27,33 @@ runs:
         EOF
 
         apt update
-        apt install -y --no-install-recommends docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+        apt install -y --no-install-recommends \
+            docker-ce \
+            docker-ce-cli \
+            containerd.io \
+            docker-buildx-plugin \
+            docker-compose-plugin \
+            sudo
 
-        id docker || adduser --system --shell /usr/sbin/nologin --home /var/lib/docker --no-create-home --disabled-password --gecos '' docker
+        id docker || adduser --system \
+            --shell /usr/sbin/nologin \
+            --home /var/lib/docker \
+            --no-create-home \
+            --disabled-password \
+            --gecos '' \
+            docker
         usermod -a -G docker docker
 
         mkdir -v -p /run/containerd
         systemctl start containerd.service
 
         while [ ! -S "/run/containerd/containerd.sock" ]; do
-          sleep 0.05
+            sleep 0.05
         done
 
         mkdir -v -p /run
         systemctl start docker.service
 
         while [ ! -S "/run/docker.sock" ]; do
-          sleep 0.05
+            sleep 0.05
         done

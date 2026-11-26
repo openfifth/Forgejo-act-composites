@@ -27,4 +27,13 @@ runs:
         EOF
 
         apt update
-        apt install -y --no-install-recommends docker-ce-cli docker-buildx-plugin docker-compose-plugin
+        apt install -y --no-install-recommends docker-ce-cli docker-buildx-plugin docker-compose-plugin sudo
+
+        id docker || adduser --system \
+            --shell /usr/sbin/nologin \
+            --home /var/lib/docker \
+            --no-create-home \
+            --disabled-password \
+            --gecos '' \
+            docker
+        usermod -a -G docker docker
