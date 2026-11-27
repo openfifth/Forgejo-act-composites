@@ -21,6 +21,9 @@ runs:
         echo DEBS_OUT="$DEBS_OUT" >> ${{ env.FORGEJO_ENV }}
         chmod -v a+rx $DEBS_OUT
 
+        export ARCH="$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')"
+        echo ARCH="$ARCH" >> ${{ env.FORGEJO_ENV }}
+
         git rev-parse || perl -I. -MKoha
 
         export KOHA_AUTO_VERSION="$(perl -I. -MKoha -le 'print $Koha::VERSION' | cut -b 1-5)"
